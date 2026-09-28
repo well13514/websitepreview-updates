@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111319">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Website Preview">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Website Preview</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Website Preview home">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span></span>
+        <span>Website Preview</span>
+      </a>
+      <span class="topbar-note">A clean space to test any URL</span>
+      <a class="help-link" href="#help">How it works <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="title">
+        <div class="eyebrow"><span class="eyebrow-dot"></span> YOUR PREVIEW WORKSPACE</div>
+        <div class="intro-row">
+          <div>
+            <h1 id="title">See your site <em>in context.</em></h1>
+            <p>Enter a website address, switch screen sizes, and explore it without leaving this workspace.</p>
+          </div>
+          <div class="intro-detail" aria-hidden="true"><span>01</span><i></i><span>PREVIEW</span></div>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="Website preview controls">
+        <form id="url-form" class="address-bar">
+          <label for="url-input">WEBSITE URL</label>
+          <div class="address-input-wrap">
+            <span class="address-icon" aria-hidden="true">↗</span>
+            <input id="url-input" type="text" inputmode="url" autocomplete="url" spellcheck="false"
+                   placeholder="example.com" aria-describedby="url-hint">
+            <button class="go-button" type="submit">Preview <span aria-hidden="true">→</span></button>
+          </div>
+          <p id="url-hint" class="address-hint">Paste a website or video link — YouTube, Vimeo, TikTok, Twitch, direct .mp4 / .m3u8 files and more. On iPhone, use your Mac's network address for local sites.</p>
+        </form>
+
+        <div class="toolbar">
+          <div class="device-group" role="group" aria-label="Preview width">
+            <button class="device-button active" type="button" data-device="desktop" aria-pressed="true"><span class="device-icon desktop-icon" aria-hidden="true"></span> Desktop</button>
+            <button class="device-button" type="button" data-device="tablet" aria-pressed="false"><span class="device-icon tablet-icon" aria-hidden="true"></span> Tablet</button>
+            <button class="device-button" type="button" data-device="mobile" aria-pressed="false"><span class="device-icon mobile-icon" aria-hidden="true"></span> Mobile</button>
+          </div>
+          <div class="toolbar-actions">
+            <span id="width-label" class="width-label">Responsive width</span>
+            <span class="toolbar-divider" aria-hidden="true"></span>
+            <button id="reload-button" class="icon-button" type="button" title="Reload preview" aria-label="Reload preview">↻</button>
+            <a id="open-button" class="open-button" href="#" target="_blank" rel="noopener noreferrer" aria-label="Open site directly in a new tab">Open site <span aria-hidden="true">↗</span></a>
+            <button id="fullscreen-button" class="fullscreen-button" type="button" title="Enter full screen" aria-label="Enter full screen"><span aria-hidden="true">⛶</span><span class="fullscreen-label">Full screen</span></button>
+          </div>
+        </div>
+
+        <div id="preview-viewport" class="preview-viewport" data-device="desktop">
+          <button id="exit-fullscreen-button" class="exit-fullscreen-button" type="button" aria-label="Exit full screen">Exit full screen <span aria-hidden="true">⤢</span></button>
+          <div class="browser-chrome" aria-hidden="true">
+            <div class="window-dots"><i></i><i></i><i></i></div>
+            <div id="preview-address" class="chrome-address">Your preview appears here</div>
+            <span class="chrome-menu">•••</span>
+          </div>
+          <iframe id="preview-frame" title="Website preview" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen></iframe>
+          <div id="video-wrap" class="video-wrap" hidden>
+            <video id="video-player" controls playsinline webkit-playsinline preload="metadata"></video>
+          </div>
+          <div id="empty-state" class="empty-state">
+            <div class="empty-art" aria-hidden="true">
+              <div class="art-window"><span class="art-dots">● ● ●</span><div class="art-hero"></div><div class="art-line line-one"></div><div class="art-line line-two"></div><div class="art-cards"><i></i><i></i><i></i></div></div>
+              <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+            </div>
+            <h2 id="empty-title">Your next view starts here.</h2>
+            <p id="empty-description">Paste a link above to see how a website looks across screen sizes.</p>
+            <div class="empty-shortcut"><kbd>↵</kbd> Press Enter to preview</div>
+          </div>
+        </div>
+        <div id="status" class="status" role="status" aria-live="polite"><span class="status-dot"></span><span>Ready when you are</span></div>
+      </section>
+
+      <section id="help" class="help">
+        <div><span class="help-number">01 /</span><h2>Preview a URL</h2><p>Type a website address and press Enter. Add a protocol if you need plain HTTP.</p></div>
+        <div><span class="help-number">02 /</span><h2>Change the canvas</h2><p>Compare desktop, tablet, and mobile widths. Select full screen to use your entire display.</p></div>
+        <div><span class="help-number">03 /</span><h2>Videos from anywhere</h2><p>YouTube, Vimeo, Dailymotion, Twitch, TikTok, Loom and direct video files (.mp4, .m3u8, .mpd) play in the built-in player. Pages that block embedding can still be opened with Open site.</p></div>
+      </section>
+    </main>
+    <footer><span>WEBSITE PREVIEW</span><span>Built with a C++ local server</span></footer>
+  </div>
+</body>
+</html>

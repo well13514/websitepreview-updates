@@ -1,0 +1,9 @@
+{
+  "name": "Website Preview",
+  "short_name": "Preview",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f7f9",
+  "theme_color": "#111319"
+}
