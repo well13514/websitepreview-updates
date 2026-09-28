@@ -65,7 +65,9 @@ function vimeoTarget(value) {
   else if (host === 'player.vimeo.com') videoId = (url.pathname.match(/^\/video\/(\d+)/) || [])[1] || '';
   else return null;
   if (!videoId) return null;
-  return { kind: 'video', player: 'Vimeo', embedUrl: `https://player.vimeo.com/video/${videoId}` };
+  const unlisted = url.searchParams.get('h');
+  const embed = `https://player.vimeo.com/video/${videoId}` + (unlisted ? `?h=${encodeURIComponent(unlisted)}` : '');
+  return { kind: 'video', player: 'Vimeo', embedUrl: embed };
 }
 
 function dailymotionTarget(value) {
@@ -84,6 +86,8 @@ function dailymotionTarget(value) {
   return { kind: 'video', player: 'Dailymotion', embedUrl: `https://www.dailymotion.com/embed/video/${videoId}` };
 }
 
+const TWITCH_RESERVED = new Set(['directory', 'videos', 'clip', 'clips', 'settings', 'subscriptions', 'inventory', 'wallet', 'jobs', 'turbo', 'broadcast', 'downloads', 'search', 'about', 'press', 'p']);
+
 function twitchTarget(value) {
   const url = new URL(value);
   const host = url.hostname.toLowerCase().replace(/^www\./, '');
@@ -91,8 +95,12 @@ function twitchTarget(value) {
   if (host === 'twitch.tv' || host === 'player.twitch.tv') {
     const videoMatch = url.pathname.match(/^\/videos\/(\d+)/);
     if (videoMatch) return { kind: 'video', player: 'Twitch', embedUrl: `https://player.twitch.tv/?video=v${videoMatch[1]}&parent=${parent}` };
+    const clipMatch = url.pathname.match(/^\/[A-Za-z0-9_]{4,25}\/clip\/([A-Za-z0-9_-]+)/);
+    if (clipMatch) return { kind: 'clip', player: 'Twitch', embedUrl: `https://clips.twitch.tv/embed?clip=${encodeURIComponent(clipMatch[1])}&parent=${parent}` };
     const channelMatch = url.pathname.match(/^\/([A-Za-z0-9_]{4,25})\/?$/);
-    if (channelMatch) return { kind: 'live', player: 'Twitch', embedUrl: `https://player.twitch.tv/?channel=${channelMatch[1]}&parent=${parent}` };
+    if (channelMatch && !TWITCH_RESERVED.has(channelMatch[1].toLowerCase())) {
+      return { kind: 'live', player: 'Twitch', embedUrl: `https://player.twitch.tv/?channel=${channelMatch[1]}&parent=${parent}` };
+    }
     return null;
   }
   if (host === 'clips.twitch.tv') {
@@ -109,7 +117,7 @@ function tiktokTarget(value) {
   if (host !== 'tiktok.com' && host !== 'vm.tiktok.com' && host !== 'vt.tiktok.com') return null;
   const match = url.pathname.match(/\/video\/(\d+)/);
   if (!match) return null;
-  return { kind: 'video', player: 'TikTok', embedUrl: `https://www.tiktok.com/embed/v2/${match[1]}` };
+  return { kind: 'video', player: 'TikTok', embedUrl: `https://www.tiktok.com/player/v1/${match[1]}` };
 }
 
 function loomTarget(value) {
@@ -125,8 +133,10 @@ function streamableTarget(value) {
   const url = new URL(value);
   const host = url.hostname.toLowerCase().replace(/^www\./, '');
   if (host !== 'streamable.com') return null;
-  const clipId = url.pathname.split('/').filter(Boolean)[0] || '';
-  if (!clipId || clipId === 'e') return null;
+  const parts = url.pathname.split('/').filter(Boolean);
+  if (!parts.length) return null;
+  const clipId = parts[0] === 'e' ? parts[1] : parts[0];
+  if (!clipId) return null;
   return { kind: 'video', player: 'Streamable', embedUrl: `https://streamable.com/e/${clipId}` };
 }
 
@@ -201,6 +211,7 @@ async function playStream(url, player) {
   frame.removeAttribute('src');
   emptyState.hidden = true;
   viewport.classList.add('has-site');
+  viewport.classList.add('showing-video');
   videoWrap.hidden = false;
   setStatus(`Loading ${player} video…`, 'loading');
   try {
@@ -233,6 +244,7 @@ function showMessage(title, description) {
   stopVideo();
   frame.removeAttribute('src');
   viewport.classList.remove('has-site');
+  viewport.classList.remove('showing-video');
   document.getElementById('empty-title').textContent = title;
   document.getElementById('empty-description').textContent = description;
   emptyState.hidden = false;
@@ -272,6 +284,7 @@ function loadUrl(url) {
   document.getElementById('empty-description').textContent = 'Paste a link above to see how a website looks across screen sizes.';
   emptyState.hidden = true;
   viewport.classList.add('has-site');
+  viewport.classList.remove('showing-video');
   setStatus(isEmbed ? `Loading ${media.player} player…` : 'Loading preview…', 'loading');
   frame.src = previewUrl;
 }

@@ -1,4 +1,9 @@
 {
-  "version": 2,
-  "files": ["index.html", "app.js", "styles.css", "manifest.webmanifest"]
+  "version": 3,
+  "files": [
+    "index.html",
+    "app.js",
+    "styles.css",
+    "manifest.webmanifest"
+  ]
 }
